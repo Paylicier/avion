@@ -1,6 +1,8 @@
+import type { FlightAwareResponse } from "./types/flightaware";
+
 const BASE_URL = 'https://flightaware.com/';
 
-export const getFlight = async (flightId: string): Promise<any> => {
+export const getFlight = async (flightId: string): Promise<FlightAwareResponse | null> => {
     const url = `${BASE_URL}live/flight/${flightId}`;
     const response = await fetch(url);
     const html = await response.text();
@@ -8,7 +10,7 @@ export const getFlight = async (flightId: string): Promise<any> => {
     return parseFlightData(html);
 }
 
-const parseFlightData = (html: string): any => {
+const parseFlightData = (html: string): FlightAwareResponse | null => {
     const regex = new RegExp('var\\s+trackpollBootstrap\\s*=\\s*(\\{.*\\})');
     const match = html.match(regex);    
     if (match && match[1]) {

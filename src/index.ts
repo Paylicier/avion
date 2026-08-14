@@ -1,4 +1,6 @@
 import * as health from "./routes/health";
+import * as flightRaw from "./routes/flight/raw";
+import * as flightBase from "./routes/flight/base"
 
 type RouteModule = {
 	route: {
@@ -8,7 +10,7 @@ type RouteModule = {
 	default: (request: Request, env: Env, ctx: ExecutionContext, params?: Record<string, string>) => Promise<Response>;
 };
 
-const routes: RouteModule[] = [health];
+const routes: RouteModule[] = [health, flightRaw, flightBase];
 
 function matchRoute(path: string, regpat: string) {
 	const regex = new RegExp(`^${regpat.replace(/:[a-zA-Z0-9_]+/g, '([^/]+)')}$`);
