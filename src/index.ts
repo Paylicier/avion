@@ -31,7 +31,7 @@ export default {
 
 		for (const route of routes) {
 
-			if(route.route.method.toUpperCase() !== request.method.toUpperCase()) return;
+			if(route.route.method.toUpperCase() !== request.method.toUpperCase()) continue;
 
 			const params = matchRoute(url.pathname, route.route.path);
 
