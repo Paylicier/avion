@@ -1,4 +1,5 @@
 import { getFlight } from "../../services/flightaware";
+import { LoggedFlight } from "../../services/types/flightaware";
 
 export const route = {
     method: 'GET',
@@ -19,21 +20,28 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         });
     }
 
-    const flightData = (await getFlight(flightId))?.flights;
+    const flightData = (await getFlight(flightId.split('-')[0]))?.flights;
     const firstKey = flightData ? Object.keys(flightData)[0] : undefined;
-    const flight = firstKey ? flightData[firstKey] : undefined;
+    let flight: LoggedFlight | undefined = firstKey ? flightData[firstKey] : undefined;
 
+    if (flightId.includes('-')) {
+        const internalId = flightId.split('-').slice(1).join('-');
+        flight = flightData ? flight?.activityLog.flights.find(f => {
+            const candidateInternalId = `${flightId.split('-')[0]}-${f.flightId.split('-')[1] ?? f.flightId}`;
+            return f.encryptedFlightId.slice(0, 8) === internalId || candidateInternalId === flightId || f.flightId === internalId;
+        }) : undefined;
+    }
 
     const baseData = flight ? {
-        "id": flight.ident,
-        "internalId": `${flight.ident}-${flight.encryptedFlightId.slice(0, 8)}`,
+        "id": flight.ident ?? flight.flightId.split('-')[0],
+        "internalId": `${flightId.split('-')[0]}-${flight.flightId.split('-')[1]}`,
         "status": flight.flightStatus,
         "cancelled": flight.cancelled,
         "diverted": flight.diverted,
         "airline": {
-            "name": flight.airline.fullName,
-            "icao": flight.airline.icao,
-            "iata": flight.airline.iata
+            "name": flight.airline?.fullName ?? flightData[firstKey].airline.fullName,
+            "icao": flight.airline?.icao ?? flightData[firstKey].airline.icao,
+            "iata": flight.airline?.iata ?? flightData[firstKey].airline.iata
         },
         "origin": {
             "name": flight.origin.friendlyName,

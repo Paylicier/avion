@@ -17,13 +17,13 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         });
     }
 
-    const flightData = (await getFlight(flightId))?.flights;
+    const flightData = (await getFlight(flightId.split('-')[0]))?.flights;
     const firstKey = flightData ? Object.keys(flightData)[0] : undefined;
     const history = firstKey ? flightData[firstKey].activityLog : undefined;
 
     const histoBase = history?.flights.map(flight => ({
-        "id": flightId,
-        "internalId": `${flightId}-${flight.encryptedFlightId.slice(0, 8)}`,
+        "id": flightData[firstKey].ident ?? flightId,
+        "internalId": `${flightId}-${flight.flightId.split('-')[1]}`,
         "status": flight.flightStatus,
         "cancelled": flight.cancelled,
         "diverted": flight.diverted,
