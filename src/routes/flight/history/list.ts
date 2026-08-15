@@ -1,11 +1,9 @@
-import { getFlight } from "../../services/flightaware";
+import { getFlight } from "../../../services/flightaware";
 
 export const route = {
     method: 'GET',
-    path: '/flight/:flightId'
+    path: '/history/:flightId'
 };
-
-// get base info for latest flight w/ this code.
 
 export default async function handler(request: Request, env: Env, ctx: ExecutionContext, params: Record<string, string> = {}): Promise<Response> {
     const flightId = params.flightId;
@@ -21,19 +19,18 @@ export default async function handler(request: Request, env: Env, ctx: Execution
 
     const flightData = (await getFlight(flightId))?.flights;
     const firstKey = flightData ? Object.keys(flightData)[0] : undefined;
-    const flight = firstKey ? flightData[firstKey] : undefined;
+    const history = firstKey ? flightData[firstKey].activityLog : undefined;
 
-
-    const baseData = flight ? {
-        "id": flight.ident,
-        "internalId": `${flight.ident}-${flight.encryptedFlightId.slice(0, 8)}`,
+    const histoBase = history?.flights.map(flight => ({
+        "id": flightId,
+        "internalId": `${flightId}-${flight.encryptedFlightId.slice(0, 8)}`,
         "status": flight.flightStatus,
         "cancelled": flight.cancelled,
         "diverted": flight.diverted,
         "airline": {
-            "name": flight.airline.fullName,
-            "icao": flight.airline.icao,
-            "iata": flight.airline.iata
+            "name": flightData[firstKey].airline.fullName,
+            "icao": flightData[firstKey].airline.icao,
+            "iata": flightData[firstKey].airline.iata
         },
         "origin": {
             "name": flight.origin.friendlyName,
@@ -62,10 +59,10 @@ export default async function handler(request: Request, env: Env, ctx: Execution
             "landing": flight.landingTimes,
             "gateArrival": flight.gateArrivalTimes
         }
-    } : undefined;
+    }));
 
-    if (flightData) {
-        return new Response(JSON.stringify(baseData), {
+    if (history) {
+        return new Response(JSON.stringify(histoBase), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
