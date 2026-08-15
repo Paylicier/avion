@@ -1,4 +1,5 @@
 import { getFlight } from "../../services/flightaware";
+import { getPlaneFromCallsign } from "../../services/adsblol";
 import { LoggedFlight } from "../../services/types/flightaware";
 
 export const route = {
@@ -10,6 +11,8 @@ export const route = {
 
 export default async function handler(request: Request, env: Env, ctx: ExecutionContext, params: Record<string, string> = {}): Promise<Response> {
     const flightId = params.flightId;
+
+    console.log(`Flight location request for flightId: ${flightId}`);
 
     if (!flightId) {
         return new Response("{ \"status\": \"error\", \"message\": \"missing flightId parameter\" }", {
@@ -32,13 +35,18 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         }) : undefined;
     }
 
+    const plane = await getPlaneFromCallsign(flight?.displayIdent ?? flight?.flightId.split('-')[0] ?? '');
+
     const locationData = flight ? {
         "status": flight.flightStatus,
         "speed": flight.flightPlan?.speed,
-        "altitude": flight.flightPlan?.altitude,
+        "altitude": plane?.alt_baro,
         "route": flight.flightPlan?.route,
         "origin": flight.origin?.icao,
-        "destination": flight.destination?.icao
+        "destination": flight.destination?.icao,
+        "hex": plane?.hex,
+        "lat": plane?.lat,
+        "lon": plane?.lon,
         } : undefined;
 
     if (locationData) {
