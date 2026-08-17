@@ -365,6 +365,14 @@ GET /airport/:icaoCode
   "link": "http://www.aeroportsdeparis.fr/",
   "wikipedia": "https://en.wikipedia.org/wiki/Charles_de_Gaulle_Airport",
   "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Paris_A%C3%A9roport_logo.svg/1280px-Paris_A%C3%A9roport_logo.svg.png",
+  "weather": {
+    "temp": 26.7,
+    "isRaining": false,
+    "windSpeed": 20.7,
+    "windDirection": 309,
+    "precipitation": 0,
+    "isDay": true
+  },
   "inbound": [
     "AEE452",
     "AFR7341",
@@ -400,6 +408,8 @@ Plane location data is from adsb.lol.
 Flight data is from flightaware.
 
 Images are from wikipedia.
+
+Weather data from open-meteo.
 
 ---
 

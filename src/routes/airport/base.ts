@@ -1,6 +1,7 @@
 import { getAirport } from "../../services/flightaware";
 import { getAirport as getAirportInfo } from "../../services/airportdb";
-import { getMainImageFromPage } from "../../services/wikipedia"
+import { getMainImageFromPage } from "../../services/wikipedia";
+import { getWeatherFromLatLon } from "../../services/open-meteo";
 
 export const route = {
     method: 'GET',
@@ -32,6 +33,8 @@ export default async function handler(request: Request, env: Env, ctx: Execution
 
     let airportInfo = await getAirportInfo(airportCode);
 
+    const weatherData = (await getWeatherFromLatLon(airportInfo.latitude_deg, airportInfo.longitude_deg))?.current
+
     airportInfo = airportInfo ? {
         name: airportInfo.name,
         iata: airportInfo.iata_code,
@@ -43,7 +46,15 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         elevation: airportInfo.elevation_ft,
         link: airportInfo.home_link,
         wikipedia: airportInfo.wikipedia_link,
-        image: await getMainImageFromPage(airportInfo.wikipedia_link)
+        image: await getMainImageFromPage(airportInfo.wikipedia_link),
+        weather : {
+            temp: weatherData.temperature_2m,
+            isRaining: Boolean(weatherData.rain),
+            windSpeed: weatherData.wind_speed_10m,
+            windDirection: weatherData.wind_direction_10m,
+            precipitation: weatherData.precipitation,
+            isDay: Boolean(weatherData.is_day)
+        }
     } : null;
 
     airportPlanes = { ...airportInfo, ...airportPlanes };
