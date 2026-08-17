@@ -9,7 +9,7 @@
 
 ## Demo
 
-The worker is currently deployed @ [avion.notri1.fr](https://avion.notri1.fr)
+The worker is currently deployed @ [avion.notri1.workers.dev](https://avion.notri1.workers.dev/)
 
 ## Setup
 
