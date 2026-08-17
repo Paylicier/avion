@@ -1,4 +1,5 @@
 import { getAirport } from "../../services/flightaware";
+import { getAirport as getAirportInfo } from "../../services/airportdb";
 
 export const route = {
     method: 'GET',
@@ -17,10 +18,36 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         });
     }
 
-    let airportData = (await getAirport(airportCode));
+    if(airportCode.length !== 4) {
+        return new Response("{ \"status\": \"error\", \"message\": \"airportCode needs to be icao code\" }", {
+            status: 400,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+    }
 
-    if (airportData) {
-        return new Response(JSON.stringify(airportData), {
+    let airportPlanes = (await getAirport(airportCode));
+
+    let airportInfo = await getAirportInfo(airportCode);
+
+    airportInfo = airportInfo ? {
+        name: airportInfo.name,
+        iata: airportInfo.iata_code,
+        icao: airportInfo.icao_code,
+        city: airportInfo.municipality,
+        country: airportInfo.iso_country,
+        lat: airportInfo.latitude_deg,
+        lon: airportInfo.longitude_deg,
+        elevation: airportInfo.elevation_ft,
+        link: airportInfo.home_link,
+        wikipedia: airportInfo.wikipedia_link,
+    } : null;
+
+    airportPlanes = { ...airportInfo, ...airportPlanes };
+
+    if (airportPlanes) {
+        return new Response(JSON.stringify(airportPlanes), {
             status: 200,
             headers: {
                 'Content-Type': 'application/json'
