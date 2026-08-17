@@ -342,6 +342,42 @@ GET /flight/:flightId/location
 }
 ```
 
+### Get airport data
+
+**Request**: 
+
+```http
+GET /airport/:icaoCode
+```
+
+**Response**:
+
+```json
+{
+  "name": "Charles de Gaulle International Airport",
+  "iata": "CDG",
+  "icao": "LFPG",
+  "city": "Paris",
+  "country": "FR",
+  "lat": 49.012798,
+  "lon": 2.55,
+  "elevation": "392",
+  "link": "http://www.aeroportsdeparis.fr/",
+  "wikipedia": "https://en.wikipedia.org/wiki/Charles_de_Gaulle_Airport",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Paris_A%C3%A9roport_logo.svg/1280px-Paris_A%C3%A9roport_logo.svg.png",
+  "inbound": [
+    "AEE452",
+    "AFR7341",
+    "EZY7073"
+  ],
+  "outbound": [
+    "T7AVB",
+    "AFR332",
+    "AFR1822"
+  ]
+}
+```
+
 ## Contributing 
 
 1. Fork the repository

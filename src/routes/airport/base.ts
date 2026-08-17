@@ -1,5 +1,6 @@
 import { getAirport } from "../../services/flightaware";
 import { getAirport as getAirportInfo } from "../../services/airportdb";
+import { getMainImageFromPage } from "../../services/wikipedia"
 
 export const route = {
     method: 'GET',
@@ -42,6 +43,7 @@ export default async function handler(request: Request, env: Env, ctx: Execution
         elevation: airportInfo.elevation_ft,
         link: airportInfo.home_link,
         wikipedia: airportInfo.wikipedia_link,
+        image: await getMainImageFromPage(airportInfo.wikipedia_link)
     } : null;
 
     airportPlanes = { ...airportInfo, ...airportPlanes };
