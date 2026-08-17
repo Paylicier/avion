@@ -399,6 +399,8 @@ Plane location data is from adsb.lol.
 
 Flight data is from flightaware.
 
+Images are from wikipedia.
+
 ---
 
 <div align="center">
